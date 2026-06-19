@@ -1,0 +1,41 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: minecraft
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    environment:
+      EULA: "TRUE"
+      VERSION: "1.21.1"
+      TYPE: "PAPER"
+      MEMORY: "2G"
+      ONLINE_MODE: "TRUE"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "emf1234"
+      RCON_PORT: "25575"
+      BROADCAST_RCON_TO_OPS: "true"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  clientrcon:
+    image: node:20-alpine
+    container_name: clientrcon
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      RCON_HOST: "minecraft"
+      RCON_PORT: "25575"
+      RCON_PASSWORD: "emf1234"
+      MC_PLAYER: "losakan"
+    volumes:
+      - ./clientRcon:/app
+    depends_on:
+      - minecraft
+    restart: unless-stopped

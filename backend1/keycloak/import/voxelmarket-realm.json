@@ -1,0 +1,75 @@
+{
+  "realm": "voxelmarket-realm",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "clients": [
+    {
+      "clientId": "voxelmarket-client",
+      "enabled": true,
+      "publicClient": true,
+      "secret": "",
+      "redirectUris": [
+        "http://localhost/*"
+      ],
+      "webOrigins": [
+        "http://localhost"
+      ],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrateur"
+      },
+      {
+        "name": "user",
+        "description": "Utilisateur standard"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "firstName": "Admin",
+      "lastName": "VoxelMarket",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "admin@voxelmarket.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "requiredActions": [],
+      "realmRoles": [
+        "admin"
+      ]
+    },
+    {
+      "username": "user1",
+      "firstName": "User",
+      "lastName": "One",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "user1@voxelmarket.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user123",
+          "temporary": false
+        }
+      ],
+      "requiredActions": [],
+      "realmRoles": [
+        "user"
+      ]
+    }
+  ]
+}

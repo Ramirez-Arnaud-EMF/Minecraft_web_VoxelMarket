@@ -1,0 +1,48 @@
+<section class="app-shell container-fluid px-2 px-md-3 px-xl-4">
+  <header class="topbar shadow-lg">
+    <div class="brand">
+      <div class="brand-mark">⛏</div>
+      <div class="brand-copy">
+        <strong>VoxelMarket</strong>
+        <span id="marketSubtitle">Marché des builds</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-link active d-inline-flex align-items-center gap-2" type="button" data-route="market"><i class="bi bi-shop"></i>Marché</button>
+      <button class="nav-link d-inline-flex align-items-center gap-2" type="button" data-route="inventory"><i class="bi bi-box-seam"></i>Inventaire</button>
+      <span class="server-chip" id="serverIpInfo">Serveur: -</span>
+    </nav>
+
+    <div class="account">
+      <div class="account-chip">
+        <div class="account-name">
+          <strong id="accountUsername">-</strong>
+        </div>
+      </div>
+      <div class="points" id="walletBadge">0 points</div>
+      <button class="button-secondary hidden d-inline-flex align-items-center gap-2" id="linkMinecraftButton" type="button"><i class="bi bi-link-45deg"></i>Lier Minecraft</button>
+      <button class="pill d-inline-flex align-items-center gap-2" id="logoutButton" type="button"><i class="bi bi-box-arrow-right"></i>Logout</button>
+    </div>
+  </header>
+
+  <div id="linkNotice" class="notice warn hidden"></div>
+
+  <section class="stack">
+    <section class="surface content" id="catalogSection">
+      <div class="section-head">
+        <div>
+          <h2 class="fw-semibold">Builds disponibles</h2>
+          <p>Les cartes ci-dessous proviennent de la base de données du backend. Un clic sur acheter lance la commande.</p>
+        </div>
+
+        <div class="toolbar">
+          <button class="button-secondary d-inline-flex align-items-center gap-2" id="refreshItemsButton" type="button"><i class="bi bi-arrow-clockwise"></i>Rafraîchir le catalogue</button>
+        </div>
+      </div>
+
+      <div id="catalogStatus" class="hint">Chargement des builds...</div>
+      <div id="catalogGrid" class="catalog-grid"></div>
+    </section>
+  </section>
+</section>

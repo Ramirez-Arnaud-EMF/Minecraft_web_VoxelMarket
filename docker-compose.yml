@@ -1,0 +1,383 @@
+services:
+  my-keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    healthcheck:
+      test: [ "CMD-SHELL", "bash -lc 'printf \"\" > /dev/tcp/127.0.0.1/7080'" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+      start_period: 70s
+    command: [ "start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm" ]
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+    volumes:
+      - ./backend1/keycloak/import:/opt/keycloak/data/import:ro
+    networks:
+      - local_network
+
+  api:
+    build: ./backend1
+    container_name: backend1-client
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      KEYCLOAK_BASE_URL: http://my-keycloak:7080
+      KEYCLOAK_REALM: voxelmarket-realm
+      KEYCLOAK_CLIENT_ID: voxelmarket-client
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ISSUER: http://localhost:7080/realms/voxelmarket-realm
+      KEYCLOAK_JWKS_URI: http://my-keycloak:7080/realms/voxelmarket-realm/protocol/openid-connect/certs
+      KEYCLOAK_AUDIENCE: account
+      ADMIN_ROLE: admin
+      DB_CLIENT_HOST: db-client
+      DB_CLIENT_PORT: 3306
+      DB_CLIENT_USER: client_user
+      DB_CLIENT_PASSWORD: client_password
+      DB_CLIENT_NAME: DB_COMPTES
+      DB_MC_HOST: db-minecraft
+      DB_MC_PORT: 3306
+      DB_MC_USER: market_user
+      DB_MC_PASSWORD: market_password
+      DB_MC_NAME: DB_MINECRAFT
+      BACKEND3_BASE_URL: http://backend3:3003
+      BACKEND3_MESSAGES_PREFIX: /api/messages
+    ports:
+      - "3001:3000"
+    depends_on:
+      my-keycloak:
+        condition: service_healthy
+      db-client:
+        condition: service_healthy
+    networks:
+      - local_network
+
+  backend2:
+    build:
+      context: ./backend2
+      dockerfile: Dockerfile
+    container_name: backend2-venteAchat
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DB_HOST: db-minecraft
+      DB_PORT: 3306
+      DB_NAME: DB_MINECRAFT
+      DB_USER: market_user
+      DB_PASSWORD: market_password
+      BACKEND1_BASE_URL: http://api:3000
+      BACKEND1_AUTH_PREFIX: /api/auth
+      BACKEND3_BASE_URL: http://backend3:3003
+      KEYCLOAK_BASE_URL: http://my-keycloak:7080
+      KEYCLOAK_REALM: voxelmarket-realm
+      KEYCLOAK_ISSUER: http://localhost:7080/realms/voxelmarket-realm
+      KEYCLOAK_AUDIENCE: account
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_BUILD_PURCHASE_QUEUE: voxelmarket.build.purchase
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+      db-minecraft:
+        condition: service_started
+      backend3:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - local_network
+
+  backend3:
+    image: node:20-alpine
+    container_name: backend3-minecraft
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      RCON_HOST: minecraft
+      RCON_PORT: 25575
+      RCON_PASSWORD: emf1234
+      API_PREFIX: /api
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_BUILD_PURCHASE_QUEUE: voxelmarket.build.purchase
+    volumes:
+      - ./backend3:/app
+    restart: unless-stopped
+    depends_on:
+      minecraft:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - local_network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: voxelmarket-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - local_network
+
+  frontend1:
+    image: nginx:alpine
+    container_name: voxelmarket-frontend1
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./frontend1:/usr/share/nginx/html:ro
+    networks:
+      - local_network
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: voxelmarket-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/monitoring/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - cadvisor
+      - api
+      - backend2
+      - backend3
+      - mysql-exporter
+    networks:
+      - local_network
+
+  loki:
+    image: grafana/loki:3.1.0
+    container_name: voxelmarket-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+    volumes:
+      - loki_data:/loki
+    networks:
+      - local_network
+
+  promtail:
+    image: grafana/promtail:3.1.0
+    container_name: voxelmarket-promtail
+    restart: unless-stopped
+    command:
+      - "-config.file=/etc/promtail/promtail.yml"
+    volumes:
+      - ./config/monitoring/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - promtail_positions:/tmp
+    depends_on:
+      - loki
+    networks:
+      - local_network
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: voxelmarket-grafana
+    restart: unless-stopped
+    ports:
+      - "3004:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - local_network
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: voxelmarket-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/host/rootfs"
+      - "--web.listen-address=:9100"
+    networks:
+      - local_network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.50.0
+    container_name: voxelmarket-cadvisor
+    restart: unless-stopped
+    ports:
+      - "8085:8080"
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - local_network
+
+  db:
+    image: mysql
+    container_name: my-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - local_network
+
+  mysql-exporter:
+    image: prom/mysqld-exporter:v0.16.0
+    container_name: my-db-exporter
+    restart: unless-stopped
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: root
+    command:
+      - --mysqld.address=my-db:3306
+      - --mysqld.username=root
+      - --web.listen-address=:9104
+    ports:
+      - "9104:9104"
+    depends_on:
+      - db
+    networks:
+      - local_network
+
+  db-minecraft:
+    image: mysql
+    container_name: db-minecraft
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: DB_MINECRAFT
+      MYSQL_USER: market_user
+      MYSQL_PASSWORD: market_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_minecraft_data:/var/lib/mysql
+      - ./initDb_mc.sql:/docker-entrypoint-initdb.d/initDb_mc.sql:ro
+    networks:
+      - local_network
+
+  db-client:
+    image: mysql
+    container_name: db-client
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: DB_COMPTES
+      MYSQL_USER: client_user
+      MYSQL_PASSWORD: client_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "client_user", "-pclient_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_client_data:/var/lib/mysql
+      - ./initDb_client.sql:/docker-entrypoint-initdb.d/initDb_client.sql:ro
+    networks:
+      - local_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: my-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOSTS: db,db-client,db-minecraft
+      PMA_PORTS: 3306,3306,3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+      - db-minecraft
+      - db-client
+    networks:
+      - local_network
+
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: minecraft
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    environment:
+      EULA: "TRUE"
+      VERSION: "1.21.1"
+      TYPE: "PAPER"
+      MEMORY: "2G"
+      ONLINE_MODE: "TRUE"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "emf1234"
+      RCON_PORT: "25575"
+      BROADCAST_RCON_TO_OPS: "true"
+      MODRINTH_PROJECTS: "luckperms,fastasyncworldedit,skript"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  db_client_data:
+  db_minecraft_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  promtail_positions:

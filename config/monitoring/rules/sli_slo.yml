@@ -1,0 +1,341 @@
+apiVersion: 1
+
+groups:
+
+    - orgId: 1
+
+      name: Alerting
+
+      folder: VoxelMarket
+
+      interval: 5m
+
+      rules:
+
+        - uid: efoiwq6r4vim8f
+
+          title: SLi/SLO-UPTIME-low-backend1
+
+          condition: A
+
+          data:
+
+            - refId: A
+
+              relativeTimeRange:
+
+                from: 600
+
+                to: 0
+
+              datasourceUid: PBFA97CFB590B2093
+
+              model:
+
+                editorMode: code
+
+                expr: 100 * avg_over_time(up{job="voxelmarket-backend1", instance="api:3000"}[5m])
+
+                instant: true
+
+                intervalMs: 1000
+
+                legendFormat: __auto
+
+                maxDataPoints: 43200
+
+                range: false
+
+                refId: A
+
+            - refId: C
+
+              relativeTimeRange:
+
+                from: 600
+
+                to: 0
+
+              datasourceUid: __expr__
+
+              model:
+
+                conditions:
+
+                    - evaluator:
+
+                        params:
+
+                            - 99.95
+
+                        type: lt
+
+                      operator:
+
+                        type: and
+
+                      query:
+
+                        params:
+
+                            - C
+
+                      reducer:
+
+                        params: []
+
+                        type: last
+
+                      type: query
+
+                datasource:
+
+                    type: __expr__
+
+                    uid: __expr__
+
+                expression: A
+
+                intervalMs: 1000
+
+                maxDataPoints: 43200
+
+                refId: C
+
+                type: threshold
+
+          noDataState: NoData
+
+          execErrState: Error
+
+          for: 5m
+
+          annotations:
+
+            summary: Quand le SLO/SLI passe en dessous de 99.95
+
+          labels: {}
+
+          isPaused: false
+
+          notification_settings:
+
+            receiver: Discord-Alerting
+
+        - uid: afol8hyb25gcgc
+
+          title: Backend Up
+
+          condition: B
+
+          data:
+
+            - refId: A
+
+              relativeTimeRange:
+
+                from: 600
+
+                to: 0
+
+              datasourceUid: PBFA97CFB590B2093
+
+              model:
+
+                editorMode: code
+
+                expr: count(up{job=~"voxelmarket-backend.*"} == 1) >= bool 3
+
+                instant: true
+
+                intervalMs: 1000
+
+                legendFormat: __auto
+
+                maxDataPoints: 43200
+
+                range: false
+
+                refId: A
+
+            - refId: B
+
+              datasourceUid: __expr__
+
+              model:
+
+                conditions:
+
+                    - evaluator:
+
+                        params:
+
+                            - 1
+
+                            - 2
+
+                        type: outside_range
+
+                      operator:
+
+                        type: and
+
+                      query:
+
+                        params: []
+
+                      reducer:
+
+                        params: []
+
+                        type: avg
+
+                      type: query
+
+                datasource:
+
+                    name: Expression
+
+                    type: __expr__
+
+                    uid: __expr__
+
+                expression: A
+
+                hide: false
+
+                intervalMs: 1000
+
+                maxDataPoints: 43200
+
+                refId: B
+
+                type: threshold
+
+          noDataState: NoData
+
+          execErrState: Error
+
+          for: 5m
+
+          annotations:
+
+            summary: Si un des 3 backend est down il envoie une alerte
+
+          labels: {}
+
+          isPaused: false
+
+          notification_settings:
+
+            receiver: Discord-Alerting
+
+        - uid: dfol9ped4uby8c
+
+          title: P95-backend1-latence
+
+          condition: C
+
+          data:
+
+            - refId: A
+
+              relativeTimeRange:
+
+                from: 600
+
+                to: 0
+
+              datasourceUid: PBFA97CFB590B2093
+
+              model:
+
+                editorMode: code
+
+                expr: "histogram_quantile(\r\n0.95,\r\nsum by (le) (\r\nrate(http_request_duration_seconds_bucket{job=\"voxelmarket-backend1\"}[5m])\r\n)\r\n)\r\n"
+
+                instant: true
+
+                intervalMs: 1000
+
+                legendFormat: __auto
+
+                maxDataPoints: 43200
+
+                range: false
+
+                refId: A
+
+            - refId: C
+
+              relativeTimeRange:
+
+                from: 600
+
+                to: 0
+
+              datasourceUid: __expr__
+
+              model:
+
+                conditions:
+
+                    - evaluator:
+
+                        params:
+
+                            - 0.5
+
+                        type: gt
+
+                      operator:
+
+                        type: and
+
+                      query:
+
+                        params:
+
+                            - C
+
+                      reducer:
+
+                        params: []
+
+                        type: last
+
+                      type: query
+
+                datasource:
+
+                    type: __expr__
+
+                    uid: __expr__
+
+                expression: A
+
+                intervalMs: 1000
+
+                maxDataPoints: 43200
+
+                refId: C
+
+                type: threshold
+
+          noDataState: NoData
+
+          execErrState: Error
+
+          for: 5m
+
+          annotations:
+
+            summary: Quand la latance des requets p95 est supérieur a 500ms
+
+          labels: {}
+
+          isPaused: false
+
+          notification_settings:
+
+            receiver: Discord-Alerting

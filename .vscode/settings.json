@@ -1,0 +1,20 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^node -e \"require\\('\\./backend3/src/controllers/inventoryController'\\); require\\('\\./backend3/src/routes/inventoryRoutes'\\); console\\.log\\('backend3 inventory modules ok'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "npm install": true,
+        "/^Set-Location 'c:\\\\repoGit\\\\projet-arnaud-et-jonas\\\\backend2'; node -e \"require\\('\\./src/services/marketService'\\); console\\.log\\('backend2-marketService-ok'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^Set-Location 'c:\\\\repoGit\\\\projet-arnaud-et-jonas\\\\backend3'; node -e \"require\\('\\./src/services/buildPurchaseConsumer'\\); console\\.log\\('backend3-buildPurchaseConsumer-ok'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "Push-Location": true,
+        "Pop-Location": true,
+        "docker compose": true
+    }
+}

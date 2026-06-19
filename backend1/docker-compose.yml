@@ -1,0 +1,125 @@
+services:
+  my-keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    healthcheck:
+      test: [ "CMD-SHELL", "bash -lc 'printf \"\" > /dev/tcp/127.0.0.1/7080'" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+      start_period: 70s
+    command: [ "start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm" ]
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import:ro
+    networks:
+      - local_network
+  api:
+    build: .
+    container_name: my-api
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      KEYCLOAK_BASE_URL: http://my-keycloak:7080
+      KEYCLOAK_REALM: voxelmarket-realm
+      KEYCLOAK_CLIENT_ID: voxelmarket-client
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ISSUER: http://localhost:7080/realms/voxelmarket-realm
+      KEYCLOAK_JWKS_URI: http://my-keycloak:7080/realms/voxelmarket-realm/protocol/openid-connect/certs
+      KEYCLOAK_AUDIENCE: account
+      ADMIN_ROLE: admin
+      DB_CLIENT_HOST: my-db-client
+      DB_CLIENT_PORT: 3306
+      DB_CLIENT_USER: client_user
+      DB_CLIENT_PASSWORD: client_password
+      DB_CLIENT_NAME: DB_COMPTES
+      DB_MC_HOST: db-minecraft
+      DB_MC_PORT: 3306
+      DB_MC_USER: market_user
+      DB_MC_PASSWORD: market_password
+      DB_MC_NAME: DB_MINECRAFT
+      BACKEND3_BASE_URL: http://backend3:3003
+      BACKEND3_MESSAGES_PREFIX: /api/messages
+    ports:
+      - "3001:3000"
+    depends_on:
+      my-keycloak:
+        condition: service_healthy
+      my-db-client:
+        condition: service_healthy
+    networks:
+      - local_network
+ 
+  db:
+    image: mysql
+    container_name: my-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - local_network
+
+  my-db-client:
+    image: mysql
+    container_name: my-db-client
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: DB_COMPTES
+      MYSQL_USER: client_user
+      MYSQL_PASSWORD: client_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "client_user", "-pclient_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_client_data:/var/lib/mysql
+      - ../initDb_client.sql:/docker-entrypoint-initdb.d/initDb_client.sql:ro
+    networks:
+      - local_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: my-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOSTS: my-db,my-db-client
+      PMA_PORTS: 3306,3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+      - my-db-client
+    networks:
+      - local_network
+   
+networks:
+  local_network:
+    driver: bridge
+ 
+volumes:
+  db_data:
+  db_client_data:
+    

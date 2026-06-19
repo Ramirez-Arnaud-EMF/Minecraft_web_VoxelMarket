@@ -1,0 +1,39 @@
+<section class="login-shell">
+  <article class="surface auth-card">
+    <span class="eyebrow">VoxelMarket Auth</span>
+    <h1>Creer un compte et se connecter</h1>
+    <p class="lead">
+      Cette page utilise backend1 (Keycloak) pour l'inscription et la connexion.
+    </p>
+
+    <div class="tabs" role="tablist" aria-label="Mode authentification">
+      <button id="tabLogin" class="tab active" type="button">Connexion</button>
+      <button id="tabRegister" class="tab" type="button">Inscription</button>
+    </div>
+
+    <form id="authForm" class="form-grid" autocomplete="off">
+      <div class="field">
+        <label for="authUsername">Pseudo</label>
+        <input id="authUsername" name="username" type="text" placeholder="ex: monPseudo" required />
+      </div>
+
+      <div class="field hidden" id="emailField">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" name="email" type="email" placeholder="ex: moi@email.com" />
+      </div>
+
+      <div class="field">
+        <label for="authPassword">Mot de passe</label>
+        <input id="authPassword" name="password" type="password" placeholder="Au moins 6 caracteres" required />
+      </div>
+
+      <div class="actions">
+        <button id="authSubmitButton" class="button" type="submit">Se connecter</button>
+      </div>
+    </form>
+
+    <p id="authHint" class="hint" style="margin-top: 10px">Connexion via backend1 (Keycloak).</p>
+    <p id="issuerInfo" class="hint" style="margin-top: 8px"></p>
+    <p id="authStatus" class="hint" style="margin-top: 8px"></p>
+  </article>
+</section>

@@ -1,0 +1,72 @@
+<section class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">⛓</div>
+      <div class="brand-copy">
+        <strong>Lier un compte Minecraft</strong>
+        <span>Validation par code envoye en jeu</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-link" type="button" id="backToMarketButton">Retour marché</button>
+    </nav>
+
+    <div class="account">
+      <div class="account-chip">
+        <div class="account-name">
+          <strong id="linkAccountUsername">-</strong>
+        </div>
+      </div>
+      <div class="points" id="linkWalletBadge">0 points</div>
+    </div>
+  </header>
+
+  <section class="stack">
+    <article class="surface content">
+      <div class="section-head">
+        <div>
+          <h2>Étape 1 · Envoyer le code</h2>
+          <p>Saisis le username Minecraft qui doit recevoir le code de liaison.</p>
+          <p class="hint" style="margin-top: 8px">IP du serveur: <strong id="linkServerIp">-</strong></p>
+        </div>
+      </div>
+
+      <form id="requestCodeForm" class="form-grid" autocomplete="off">
+        <div class="field">
+          <label for="minecraftUsername">Username Minecraft</label>
+          <input id="minecraftUsername" name="minecraftUsername" type="text" placeholder="ex: steve_mc" required />
+        </div>
+        <div class="actions" style="max-width: 320px">
+          <button id="requestCodeButton" class="button" type="submit">Demander un code</button>
+        </div>
+      </form>
+
+      <p id="requestCodeStatus" class="hint" style="margin-top: 10px"></p>
+      <div class="actions hidden" id="retryRequestCodeWrap" style="max-width: 320px; margin-top: 10px">
+        <button id="retryRequestCodeButton" class="button-secondary" type="button">Renvoyer le code</button>
+      </div>
+    </article>
+
+    <article class="surface content hidden" id="confirmSection">
+      <div class="section-head">
+        <div>
+          <h2>Étape 2 · Valider le code</h2>
+          <p>Entre le code reçu sur le compte Minecraft pour finaliser la liaison.</p>
+        </div>
+      </div>
+
+      <form id="confirmCodeForm" class="form-grid" autocomplete="off">
+        <div class="field">
+          <label for="minecraftCode">Code (6 chiffres)</label>
+          <input id="minecraftCode" name="minecraftCode" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="123456" required />
+        </div>
+        <div class="actions" style="max-width: 320px">
+          <button id="confirmCodeButton" class="button" type="submit">Valider le code</button>
+        </div>
+      </form>
+
+      <p id="confirmCodeStatus" class="hint" style="margin-top: 10px"></p>
+    </article>
+  </section>
+</section>

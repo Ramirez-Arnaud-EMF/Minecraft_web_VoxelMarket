@@ -1,0 +1,68 @@
+<section class="app-shell container-fluid px-2 px-md-3 px-xl-4">
+  <header class="topbar shadow-lg">
+    <div class="brand">
+      <div class="brand-mark">📦</div>
+      <div class="brand-copy">
+        <strong>VoxelMarket</strong>
+        <span id="marketSubtitle">Inventaire joueur</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-link d-inline-flex align-items-center gap-2" type="button" data-route="market"><i class="bi bi-shop"></i>Marché</button>
+      <button class="nav-link active d-inline-flex align-items-center gap-2" type="button" data-route="inventory"><i class="bi bi-box-seam"></i>Inventaire</button>
+      <span class="server-chip" id="serverIpInfo">Serveur: -</span>
+    </nav>
+
+    <div class="account">
+      <div class="account-chip">
+        <div class="account-name">
+          <strong id="accountUsername">-</strong>
+        </div>
+      </div>
+      <div class="points" id="walletBadge">0 points</div>
+      <button class="button-secondary hidden d-inline-flex align-items-center gap-2" id="linkMinecraftButton" type="button"><i class="bi bi-link-45deg"></i>Lier Minecraft</button>
+      <button class="pill d-inline-flex align-items-center gap-2" id="logoutButton" type="button"><i class="bi bi-box-arrow-right"></i>Logout</button>
+    </div>
+  </header>
+
+  <div id="linkNotice" class="notice warn hidden"></div>
+
+  <section class="stack">
+    <section class="surface content" id="inventorySection">
+      <div class="section-head">
+        <div>
+          <h2 class="fw-semibold">Résumé du compte</h2>
+          <p>Solde et inventaire du joueur connecté.</p>
+        </div>
+
+        <div class="toolbar">
+          <button class="button-secondary d-inline-flex align-items-center gap-2" id="refresh-inv" type="button"><i class="bi bi-arrow-clockwise"></i>Rafraîchir l'inventaire</button>
+        </div>
+      </div>
+
+      <div class="inventory-list" id="summaryCards">
+        <div class="inventory-row">
+          <div>
+            <strong>Solde</strong>
+            <span class="muted">Points disponibles</span>
+          </div>
+          <div class="price" id="summaryWallet">0</div>
+        </div>
+        <div class="inventory-row">
+          <div>
+            <strong>Inventaire</strong>
+            <span class="muted">Elements possedes</span>
+          </div>
+          <div id="summaryInventoryCount">0</div>
+        </div>
+      </div>
+
+      <div style="height: 16px"></div>
+      <h3 style="margin-bottom: 10px">Inventaire detaille</h3>
+      <div class="inventory-list" id="inventoryList">
+        <div class="hint">Aucun inventaire charge.</div>
+      </div>
+    </section>
+  </section>
+</section>
