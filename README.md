@@ -1,315 +1,314 @@
-# 321 - Programmer des systèmes distribués
+# 321 - Programming Distributed Systems
 
-- [321 - Programmer des systèmes distribués](#321---programmer-des-systèmes-distribués)
-  - [Lancement du projet](#lancement-du-projet)
-    - [Prérequis](#prérequis)
-    - [Démarrage rapide](#démarrage-rapide)
-    - [Guide des Urls :](#guide-des-urls-)
-    - [Arrêt](#arrêt)
-  - [Analyse](#analyse)
-    - [Description du contexte](#description-du-contexte)
-    - [Schéma de principe de l'application](#schéma-de-principe-de-lapplication)
-      - [Microservices :](#microservices-)
-    - [Diagramme des cas d'utilisation](#diagramme-des-cas-dutilisation)
-    - [Diagramme d'activité n°1](#diagramme-dactivité-n1)
-    - [Diagramme d'activité n°2](#diagramme-dactivité-n2)
-  - [Conception](#conception)
-    - [Architecture globale](#architecture-globale)
-    - [Diagramme de séquence n°1](#diagramme-de-séquence-n1)
-    - [Diagramme de séquence n°2](#diagramme-de-séquence-n2)
-    - [Schémas relationnels des bases de données](#schémas-relationnels-des-bases-de-données)
-    - [Conception des tests](#conception-des-tests)
-  - [Implémentation](#implémentation)
-    - [Descente de code n°1](#descente-de-code-n1)
-      - [Fonctionnalité : Achat d'un build (en partant du backend)](#fonctionnalité--achat-dun-build-en-partant-du-backend)
-        - [1. Entrée API Backend2 (marketRoutes.js)](#1-entrée-api-backend2-marketroutesjs)
-        - [2. Validation du payload (requestValidation.js)](#2-validation-du-payload-requestvalidationjs)
-        - [3. Contrôleur Backend2 (marketController.js)](#3-contrôleur-backend2-marketcontrollerjs)
-        - [4. Service métier Backend2 (marketService.js)](#4-service-métier-backend2-marketservicejs)
-        - [4.1 Verrouillage SQL du wallet (Backend1)](#41-verrouillage-sql-du-wallet-backend1)
-        - [5. Publication RabbitMQ (rabbitMqService.js)](#5-publication-rabbitmq-rabbitmqservicejs)
-        - [6. Consommation Backend3 (buildPurchaseConsumer.js)](#6-consommation-backend3-buildpurchaseconsumerjs)
-        - [7. Application en jeu via RCON (Backend3)](#7-application-en-jeu-via-rcon-backend3)
-    - [Descente de code n°2](#descente-de-code-n2)
-      - [Fonctionnalité : Récupération d'inventaire Minecraft](#fonctionnalité--récupération-dinventaire-minecraft)
-        - [1. Initiation Frontend (inventory.html / app.js)](#1-initiation-frontend-inventoryhtml--appjs)
-        - [2. Appel API (inventoryService.js)](#2-appel-api-inventoryservicejs)
-        - [3. Routage Backend3 (inventoryRoutes.js)](#3-routage-backend3-inventoryroutesjs)
-        - [4. Contrôleur Backend3 (inventoryController.js)](#4-contrôleur-backend3-inventorycontrollerjs)
-        - [5. Service RCON (rconService.js)](#5-service-rcon-rconservicejs)
-        - [6. Normalisation des items](#6-normalisation-des-items)
-        - [7. Affichage Frontend (inventoryView.js)](#7-affichage-frontend-inventoryviewjs)
-    - [Problèmes rencontrés](#problèmes-rencontrés)
-    - [Améliorations](#améliorations)
-    - [Limitations et manquement cause de temps](#limitations-et-manquement-cause-de-temps)
+- [321 - Programming Distributed Systems](#321---programming-distributed-systems)
+  - [Project Launch](#project-launch)
+    - [Prerequisites](#prerequisites)
+    - [Quick Start](#quick-start)
+    - [Urls Guide:](#urls-guide-)
+    - [Shutdown](#shutdown)
+  - [Analysis](#analysis)
+    - [Context Description](#context-description)
+    - [Application Principle Diagram](#application-principle-diagram)
+      - [Microservices:](#microservices-)
+    - [Use Case Diagram](#use-case-diagram)
+    - [Activity Diagram #1](#activity-diagram-1)
+    - [Activity Diagram #2](#activity-diagram-2)
+  - [Design](#design)
+    - [Global Architecture](#global-architecture)
+    - [Sequence Diagram #1](#sequence-diagram-1)
+    - [Sequence Diagram #2](#sequence-diagram-2)
+    - [Database Relational Schemas](#database-relational-schemas)
+    - [Tests Design](#tests-design)
+  - [Implementation](#implementation)
+    - [Code Dive #1](#code-dive-1)
+      - [Feature: Buying a build (starting from the backend)](#feature-buying-a-build-starting-from-the-backend)
+        - [1. Backend2 API Entry (marketRoutes.js)](#1-backend2-api-entry-marketroutesjs)
+        - [2. Payload Validation (requestValidation.js)](#2-payload-validation-requestvalidationjs)
+        - [3. Backend2 Controller (marketController.js)](#3-backend2-controller-marketcontrollerjs)
+        - [4. Backend2 Business Service (marketService.js)](#4-backend2-business-service-marketservicejs)
+        - [4.1 SQL Wallet Locking (Backend1)](#41-sql-wallet-locking-backend1)
+        - [5. RabbitMQ Publishing (rabbitMqService.js)](#5-rabbitmq-publishing-rabbitmqservicejs)
+        - [6. Backend3 Consumption (buildPurchaseConsumer.js)](#6-backend3-consumption-buildpurchaseconsumerjs)
+        - [7. In-Game Application via RCON (Backend3)](#7-in-game-application-via-rcon-backend3)
+    - [Code Dive #2](#code-dive-2)
+      - [Feature: Minecraft Inventory Retrieval](#feature-minecraft-inventory-retrieval)
+        - [1. Frontend Initiation (inventory.html / app.js)](#1-frontend-initiation-inventoryhtml--appjs)
+        - [2. API Call (inventoryService.js)](#2-api-call-inventoryservicejs)
+        - [3. Backend3 Routing (inventoryRoutes.js)](#3-backend3-routing-inventoryroutesjs)
+        - [4. Backend3 Controller (inventoryController.js)](#4-backend3-controller-inventorycontrollerjs)
+        - [5. RCON Service (rconService.js)](#5-rcon-service-rconservicejs)
+        - [6. Items Normalization](#6-items-normalization)
+        - [7. Frontend Display (inventoryView.js)](#7-frontend-display-inventoryviewjs)
+    - [Encountered Issues](#encountered-issues)
+    - [Improvements](#improvements)
+    - [Limitations and Shortcomings Due to Time Constraints](#limitations-and-shortcomings-due-to-time-constraints)
   - [Tests](#tests)
-    - [Résultats des tests](#résultats-des-tests)
-    - [Requêtes POSTMAN](#requêtes-postman)
-      - [Endpoints principaux](#endpoints-principaux)
-      - [Requêtes avec paramètres](#requêtes-avec-paramètres)
+    - [Test Results](#test-results)
+    - [POSTMAN Requests](#postman-requests)
+      - [Main Endpoints](#main-endpoints)
+      - [Requests with Parameters](#requests-with-parameters)
   - [Conclusion](#conclusion)
-    - [Réalisation des objectifs](#réalisation-des-objectifs)
-    - [Fonctionnalités livrées](#fonctionnalités-livrées)
-    - [Compétences techniques développées](#compétences-techniques-développées)
-    - [Vision globale](#vision-globale)
+    - [Objectives Achievement](#objectives-achievement)
+    - [Delivered Features](#delivered-features)
+    - [Developed Technical Skills](#developed-technical-skills)
+    - [Global Vision](#global-vision)
 
 
-Projet implémentant l'ensemble des concepts liés à la programmation des systèmes distribués. Ce module vise à développer et mettre en place la compétence suivante : analyser, comprendre, planifier, étendre et utiliser des systèmes distribués, puis transférer des applications existantes vers une architecture distribuée.
+Project implementing all the concepts related to programming distributed systems. This module aims to develop and implement the following skill: analyzing, understanding, planning, extending, and using distributed systems, and then transferring existing applications to a distributed architecture.
 
-**Objectifs pédagogiques :**
+**Pedagogical Objectives:**
 
-1. Analyser des systèmes logiciels présentant une structure différente et les transférer vers des systèmes distribués.
-2. Utiliser des composants de système dans des systèmes distribués.
-3. Relier des parties de système via des interfaces bien définies.
-4. Implémenter des composants de système dans un système distribué et vérifier leur fonctionnement.
+1. Analyze software systems presenting a different structure and transfer them to distributed systems.
+2. Use system components in distributed systems.
+3. Link system parts via well-defined interfaces.
+4. Implement system components in a distributed system and verify their operation.
 
-## Lancement du projet
+## Project Launch
 
-### Prérequis
+### Prerequisites
 
-- Docker Desktop (avec Docker Compose)
-- Node.js 18+ (si vous lancez aussi les services hors Docker)
-- Client Minecraft (Version 1.21.1 pour le lancement)
-- Connexion internet
-- Ip du serveur : localhost:25565
+- Docker Desktop (with Docker Compose)
+- Node.js 18+ (if you are also running services outside Docker)
+- Minecraft Client (Version 1.21.1 for startup)
+- Internet connection
+- Server IP: localhost:25565
 
-### Démarrage rapide
+### Quick Start
 
-Depuis la racine du projet :
+From the project root:
 
 ```bash
 docker compose up -d
 ```
 
-Lancer Minecraft en 1.21.1 et rejoindre le serveur grace au menu multijoueur grace a l'IP. ( Rejoindre le serveur peut prendre un peu de temps, il faut que le serveur démarre completement )
+Launch Minecraft in 1.21.1 and join the server through the multiplayer menu using the IP. (Joining the server might take a little time, the server needs to fully start)
 
-### Guide des Urls :
+### Urls Guide:
 
-- Backend 1 (Api compte) : localhsot:3001
-- Backend 2 (VoxelMarket) : localhsot:3002
-- Backend 3 (Service Minecraft) : localhsot:3003
-- PhpMyAdmin : localhsot:8080
-- Prometheus : localhsot:9090
-- Grafana : localhsot:3004
-- Loki : localhsot:3100
-- Frontend : localhsot:8081
-- Serveur Minecraft : localhost:25565
-- Keycloak : localhost:7080
+- Backend 1 (Account Api): localhost:3001
+- Backend 2 (VoxelMarket): localhost:3002
+- Backend 3 (Minecraft Service): localhost:3003
+- PhpMyAdmin: localhost:8080
+- Prometheus: localhost:9090
+- Grafana: localhost:3004
+- Loki: localhost:3100
+- Frontend: localhost:8081
+- Minecraft Server: localhost:25565
+- Keycloak: localhost:7080
 
-Vérification de la santé des backend avec le préfixe /health
-Les métriques Prometheus sont exposées sur /metrics pour les trois backends et pour MySQL via l'exporter dédié.
+Backend health check with the /health prefix.
+Prometheus metrics are exposed on /metrics for the three backends and for MySQL via the dedicated exporter.
 
-### Arrêt
+### Shutdown
 
 ```bash
 docker compose down
 ```
 
-## Analyse
+## Analysis
 
-### Description du contexte
+### Context Description
 
-VoxelMarket est une solution de monétisation in-game basée sur une architecture microservices asynchrone. En liant leur identité via Keycloak, les joueurs transforment leurs efforts physiques (minage) en monnaie virtuelle stockée en base de données. Le flux économique est volontairement unidirectionnel : les joueurs vendent leurs items au système pour gagner des pièces, puis utilisent ces pièces pour acheter des builds proposés par le système. Les transactions passent par RabbitMQ afin de garantir la fiabilité des échanges, même en cas de déconnexion temporaire du serveur de jeu.
+VoxelMarket is an in-game monetization solution based on an asynchronous microservices architecture. By linking their identity via Keycloak, players turn their physical efforts (mining) into virtual currency stored in a database. The economic flow is intentionally unidirectional: players sell their items to the system to earn coins, then use these coins to buy builds offered by the system. Transactions go through RabbitMQ to ensure reliable exchanges, even in the event of a temporary game server disconnection.
 
-### Schéma de principe de l'application
-
-    Le schéma doit rester volontairement simple et ne pas entrer dans les détails
-    techniques. L’objectif est de donner une vue d’ensemble de l’architecture de
-    l’application.
-
-    Ajoutez ensuite quelques lignes d’explication pour décrire les éléments
-    principaux du schéma et le rôle de chaque entité dans l’application.
--->
-
-![Architecture système complet](./ressources/schGl.png)
-
-#### Microservices :
-
-- **Compte** : Gère la création et connexion des utilisateurs. Authentifie les joueurs avec le serveur Minecraft en communiquant avec le microservice Minecraft/Rcon pour envoyer les codes de vérification.
-- **Vente/Achat** : Gère la vente des items par les joueurs au système et l'achat des builds (constructions) par les joueurs. Communique avec Minecraft/Rcon pour récupérer l'inventaire et utilise des files RabbitMQ pour les transactions.
-- **Minecraft/Rcon** : Fait le lien entre le serveur Minecraft et les autres microservices. Consomme les files de vente d'items et d'achat/placement de builds, puis envoie les instructions au jeu. Récupère aussi les informations des joueurs.
-- **Keycloak** : Gère l'authentification et la connexion.
-- **Traefik** : Gère la répartition de la charge sur les services et conteneurs.
-- **RabbitMQ** : Gère la transmission des requêtes asynchrones.
-
-### Diagramme des cas d'utilisation
-
-![Cas d'utilisation UML](./ressources/diUCG.png)
-
-**Acteurs métier :**
-
-- **Visiteur** : Utilisateur non identifié avec accès à l'authentification de base.
-- **Client** : Utilisateur authentifié héritant du rôle Visiteur, avec accès aux fonctionnalités interactives et économiques.
-
-**Systèmes d'infrastructure :**
-
-- **Keycloak** (Auth) : Fournisseur d'identité centralisant la sécurité.
-- **RabbitMQ** (Bus) : Médiateur de messages assurant la communication asynchrone.
-- **Serveur Minecraft** : Environnement de jeu où s'effectuent les actions physiques.
-- **Base de Données** : Système de stockage persistant pour le wallet et les données.
-
-![RabbitMQ communication schéma](./ressources/diUCRM.png)
-
-### Diagramme d'activité n°1
+### Application Principle Diagram
 
 <!--
-    TODO APPRENTI :
-    Un diagramme d’activité UML permet de représenter les différentes étapes
-    d’un processus ou d’une fonctionnalité dans une application.
+    The diagram should remain intentionally simple and not go into technical details.
+    The goal is to give an overview of the application's architecture.
 
-    Réalisez ici un diagramme d’activité décrivant le déroulement d’une
-    fonctionnalité de votre application. Ce diagramme doit montrer les
-    principales actions, les décisions éventuelles et le flux du processus.
-
-    Ce premier diagramme d’activité doit être réalisé par l’un des deux apprentis.
+    Then add a few lines of explanation to describe the main elements
+    of the diagram and the role of each entity in the application.
 -->
 
-**Fonctionnalité** : Placement d'un build
+![Full system architecture](./ressources/schGl.png)
 
-![Processus placement build](./ressources/diAct1.png)
+#### Microservices:
 
-### Diagramme d'activité n°2
+- **Account**: Manages the creation and login of users. Authenticates players with the Minecraft server by communicating with the Minecraft/Rcon microservice to send verification codes.
+- **Sale/Purchase**: Manages the sale of items by players to the system and the purchase of builds (constructions) by players. Communicates with Minecraft/Rcon to retrieve the inventory and uses RabbitMQ queues for transactions.
+- **Minecraft/Rcon**: Acts as the link between the Minecraft server and the other microservices. Consumes item sale and build purchase/placement queues, then sends instructions to the game. Also retrieves player information.
+- **Keycloak**: Handles authentication and login.
+- **Traefik**: Manages load balancing across services and containers.
+- **RabbitMQ**: Manages the transmission of asynchronous requests.
 
-**Fonctionnalité** : Liaison du compte Minecraft au compte VoxelMarket
+### Use Case Diagram
 
-![Processus liaison compte](./ressources/diAct2.png)
+![UML Use Cases](./ressources/diUCG.png)
 
-## Conception
+**Business Actors:**
 
-### Architecture globale
+- **Visitor**: Unidentified user with access to basic authentication.
+- **Client**: Authenticated user inheriting the Visitor role, with access to interactive and economic features.
 
-    On doit notamment y retrouver les différents microservices, les clients, les bases de données
-    ainsi que les services d’infrastructure utilisés (par exemple : Traefik, Keycloak, RabbitMQ,
+**Infrastructure Systems:**
+
+- **Keycloak** (Auth): Identity provider centralizing security.
+- **RabbitMQ** (Bus): Message broker ensuring asynchronous communication.
+- **Minecraft Server**: Game environment where physical actions take place.
+- **Database**: Persistent storage system for the wallet and data.
+
+![RabbitMQ communication schema](./ressources/diUCRM.png)
+
+### Activity Diagram #1
+
+<!--
+    APPRENTICE TODO:
+    A UML activity diagram represents the different steps
+    of a process or feature in an application.
+
+    Create an activity diagram here describing the flow of a
+    feature of your application. This diagram should show the
+    main actions, potential decisions, and the process flow.
+
+    This first activity diagram must be done by one of the two apprentices.
+-->
+
+**Feature**: Placing a build
+
+![Process placement build](./ressources/diAct1.png)
+
+### Activity Diagram #2
+
+**Feature**: Linking the Minecraft account to the VoxelMarket account
+
+![Process account linking](./ressources/diAct2.png)
+
+## Design
+
+### Global Architecture
+
+<!--
+    It must particularly include the different microservices, clients, databases
+    as well as the infrastructure services used (for example: Traefik, Keycloak, RabbitMQ,
     Prometheus, Grafana, etc.).
 
-    Les liens entre les différents services doivent être clairement visibles, ainsi que les ports
-    utilisés pour les communications.
+    Links between different services must be clearly visible, along with the ports
+    used for communications.
 
-    Le diagramme doit donner une vision claire de l’organisation générale du système.
-    Complétez ensuite ce schéma par des explications détaillées décrivant le rôle des différents
-    composants et la manière dont ils interagissent dans l’architecture globale de l’application.
+    The diagram must provide a clear vision of the system's overall organization.
+    Then complete this diagram with detailed explanations describing the role of the different
+    components and how they interact in the application's global architecture.
 -->
 
-![Architecture système distribuée](./ressources/schGl.png)
+![Distributed system architecture](./ressources/schGl.png)
 
-### Diagramme de séquence n°1
+### Sequence Diagram #1
 
 <!--
-    TODO APPRENTI :
-    Un diagramme de séquence UML permet de représenter les interactions entre
-    les différents composants d’un système au cours du temps lors de l’exécution
-    d’une fonctionnalité.
+    APPRENTICE TODO:
+    A UML sequence diagram represents interactions between
+    different components of a system over time during the execution
+    of a feature.
 
-    Réalisez ici un diagramme de séquence pour l’une des fonctionnalités de votre
-    application. Ce diagramme doit montrer les échanges entre les différents
-    éléments du système (client, microservices, base de données, etc.) ainsi que
-    l’ordre dans lequel ces interactions se produisent.
+    Create a sequence diagram here for one of your application's
+    features. This diagram must show the exchanges between the different
+    system elements (client, microservices, database, etc.) and the
+    order in which these interactions occur.
 
-    Ce premier diagramme de séquence doit être réalisé par l’un des deux apprentis.
+    This first sequence diagram must be done by one of the two apprentices.
 -->
 
-![Séquence achat build](./ressources/diSeq1.png)
+![Sequence purchase build](./ressources/diSeq1.png)
 
-### Diagramme de séquence n°2
+### Sequence Diagram #2
 
 <!--
-    TODO APPRENTI :
-    Réalisez un second diagramme de séquence UML pour une autre fonctionnalité
-    de votre application.
+    APPRENTICE TODO:
+    Create a second UML sequence diagram for another feature
+    of your application.
 
-    Référez-vous aux explications données dans le chapitre précédent concernant
-    le diagramme de séquence. Ce diagramme doit montrer les interactions entre
-    les différents composants du système et l’ordre dans lequel elles se produisent.
+    Refer to the explanations given in the previous chapter regarding
+    the sequence diagram. This diagram must show the interactions between
+    the different system components and the order in which they occur.
 
-    Ce second diagramme de séquence doit impérativement être réalisé par le
-    deuxième apprenti.
+    This second sequence diagram must imperatively be done by the
+    second apprentice.
 -->
 
-![Séquence liaison compte](./ressources/diSeq2.png)
+![Sequence account linking](./ressources/diSeq2.png)
 
-### Schémas relationnels des bases de données
+### Database Relational Schemas
 
 <!--
-    TODO APPRENTI :
-    Un schéma relationnel de base de données permet de représenter la structure
-    d’une base de données relationnelle. Il montre les différentes tables,
-    leurs attributs, les clés primaires ainsi que les relations entre les tables.
+    APPRENTICE TODO:
+    A database relational schema represents the structure
+    of a relational database. It shows the different tables,
+    their attributes, primary keys, and the relationships between tables.
 
-    Réalisez ici le schéma relationnel des bases de données utilisées dans votre projet.
-    Toutes les bases de données implémentées dans l’application doivent être représentées.
+    Create the relational schema of the databases used in your project here.
+    All databases implemented in the application must be represented.
 
-    Les tables, leurs clés primaires, leurs clés étrangères et les relations entre
-    les tables doivent apparaître clairement dans le schéma.
+    Tables, their primary keys, foreign keys, and relationships between
+    tables must clearly appear in the diagram.
 
-    Complétez ce schéma par des explications détaillées permettant de comprendre
-    l’organisation des données, le rôle des différentes tables et les relations
-    existantes entre elles.
+    Complete this diagram with detailed explanations allowing an understanding
+    of data organization, the role of different tables, and existing relationships
+    between them.
 -->
 
-![Schéma base données](./ressources/diER.png)
+![Database schema](./ressources/diER.png)
 
-### Conception des tests
+### Tests Design
 
 <!--
-    TODO APPRENTI :
-    Dans ce chapitre, vous devez élaborer la conception des tests de votre application.
+    APPRENTICE TODO:
+    In this chapter, you must develop the test design of your application.
 
-    L’objectif est de définir de manière structurée les tests qui permettront de vérifier
-    le bon fonctionnement de l’ensemble de votre système. Toutes les parties de votre
-    application doivent être prises en compte (clients, microservices, API, bases de
-    données, etc.).
+    The goal is to define in a structured way the tests that will verify
+    the proper functioning of your entire system. All parts of your
+    application must be taken into account (clients, microservices, API, databases, etc.).
 
-    Présentez vos tests sous forme de tableau contenant au minimum les éléments suivants :
-    - un numéro de test
-    - une description claire du test à réaliser
-    - le résultat attendu
+    Present your tests in a table format containing at least the following elements:
+    - a test number
+    - a clear description of the test to perform
+    - the expected result
 
-    Les tests doivent couvrir les différentes fonctionnalités importantes de l’application
-    afin de démontrer que le système fonctionne correctement dans les différents cas
-    d’utilisation.
+    Tests must cover the different important features of the application
+    to demonstrate that the system works correctly in various use cases.
 -->
 
-Les tests ci-dessous couvrent les parcours critiques de VoxelMarket : sécurité, intégration inter-services, persistance des données et traitement asynchrone via RabbitMQ.
+The tests below cover the critical paths of VoxelMarket: security, inter-service integration, data persistence, and asynchronous processing via RabbitMQ.
 
-| # Test | Description                                                                                                    | Résultat attendu                                                                                             |
+| Test # | Description                                                                                                    | Expected Result                                                                                             |
 | :----: | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-|  T01   | Authentifier un utilisateur via Keycloak avec des identifiants valides.                                        | L'utilisateur est authentifié, un token valide est retourné et les routes protégées sont accessibles.        |
-|  T02   | Tenter une authentification avec des identifiants invalides.                                                   | L'accès est refusé, aucun token valide n'est délivré.                                                        |
-|  T03   | Générer un code de liaison Minecraft depuis le plugin en jeu.                                                  | Un code unique est créé avec une date d'expiration et stocké en base.                                        |
-|  T04   | Confirmer la liaison Minecraft avec un code valide côté Web.                                                   | Le compte VoxelMarket est lié au compte Minecraft correspondant et l'état est persisté en base.              |
-|  T05   | Confirmer la liaison avec un code expiré ou invalide.                                                          | La liaison est refusée avec un message d'erreur explicite, sans modification en base.                        |
-|  T06   | Consulter le solde wallet d'un utilisateur authentifié.                                                        | Le solde retourné correspond à la valeur stockée dans la base de données.                                    |
-|  T07   | Vendre des items au système avec une quantité valide dans l'inventaire.                                        | Les items sont retirés de l'inventaire, le wallet est crédité, et la transaction de vente est enregistrée.   |
-|  T08   | Acheter un build avec solde suffisant.                                                                         | Le montant est réservé/débité selon le flux, l'achat est enregistré et une demande de placement est publiée. |
-|  T09   | Acheter un build avec solde insuffisant.                                                                       | L'achat est refusé, aucun débit n'est effectué et aucun événement de placement n'est publié.                 |
-|  T10   | Déclencher un placement de build depuis le client (commande en jeu).                                           | La demande est acceptée, l'événement est publié, puis traité par le plugin de placement.                     |
-|  T11   | Placement réussi côté serveur Minecraft.                                                                       | Le statut passe à réussi, la transaction est finalisée et le client reçoit une confirmation.                 |
-|  T12   | Vérifier la persistance des messages RabbitMQ lors d'une indisponibilité temporaire d'un service consommateur. | Le message reste en file et est traité dès le retour du service, sans perte de transaction.                  |
-|  T13   | Tester l'accès à une route protégée API sans token.                                                            | L'API répond avec un refus d'accès (401/403) et aucune action métier n'est exécutée.                         |
-|  T14   | Vérifier l'intégrité des données après un cycle complet liaison + vente d'items + achat + placement.           | Les tables concernées sont cohérentes (liaison, vente, achat, wallet, statut de placement).                  |
-|  T15   | Tester la charge légère (ventes d'items et achats de builds simultanés pour un même utilisateur).              | Le système répond sans incohérence de solde, d'inventaire ni doublon de traitement critique.                 |
+|  T01   | Authenticate a user via Keycloak with valid credentials.                                                       | User is authenticated, a valid token is returned, and protected routes are accessible.                       |
+|  T02   | Attempt authentication with invalid credentials.                                                               | Access is denied, no valid token is issued.                                                                  |
+|  T03   | Generate a Minecraft linking code from the in-game plugin.                                                     | A unique code is created with an expiration date and stored in the database.                                 |
+|  T04   | Confirm Minecraft linking with a valid code on the Web side.                                                   | The VoxelMarket account is linked to the corresponding Minecraft account and the state is persisted in the database. |
+|  T05   | Confirm linking with an expired or invalid code.                                                               | Linking is denied with an explicit error message, without database modification.                             |
+|  T06   | Check the wallet balance of an authenticated user.                                                             | The returned balance matches the value stored in the database.                                               |
+|  T07   | Sell items to the system with a valid quantity in the inventory.                                               | Items are removed from the inventory, the wallet is credited, and the sale transaction is recorded.          |
+|  T08   | Buy a build with sufficient balance.                                                                           | The amount is reserved/debited according to the flow, purchase is recorded, and a placement request is published. |
+|  T09   | Buy a build with insufficient balance.                                                                         | Purchase is denied, no debit is made, and no placement event is published.                                   |
+|  T10   | Trigger a build placement from the client (in-game command).                                                   | The request is accepted, the event is published, then processed by the placement plugin.                     |
+|  T11   | Successful placement on the Minecraft server side.                                                             | The status changes to successful, the transaction is finalized, and the client receives a confirmation.      |
+|  T12   | Verify RabbitMQ message persistence during a temporary unavailability of a consumer service.                   | The message remains in the queue and is processed as soon as the service returns, without transaction loss.  |
+|  T13   | Test access to an API protected route without a token.                                                         | The API responds with an access denial (401/403) and no business action is executed.                         |
+|  T14   | Verify data integrity after a complete cycle linking + item sale + purchase + placement.                   | The concerned tables are consistent (linking, sale, purchase, wallet, placement status).                     |
+|  T15   | Test light load (simultaneous item sales and build purchases for the same user).                               | The system responds without balance inconsistency, inventory inconsistency, or critical processing duplication. |
 
-## Implémentation
+## Implementation
 
-### Descente de code n°1
+### Code Dive #1
 
-#### Fonctionnalité : Achat d'un build (en partant du backend)
+#### Feature: Buying a build (starting from the backend)
 
-Cette descente de code suit l'exécution backend de l'achat d'un build, depuis l'entrée API de Backend2 jusqu'au traitement asynchrone dans Backend3 via RabbitMQ.
+This code dive follows the backend execution of buying a build, from the Backend2 API entry to the asynchronous processing in Backend3 via RabbitMQ.
 
-##### 1. Entrée API Backend2 (marketRoutes.js)
+##### 1. Backend2 API Entry (marketRoutes.js)
 
-Le point d'entrée est la route d'achat :
+The entry point is the purchase route:
 
 ```javascript
 router.post("/achat", validateAchat, marketController.achat);
 ```
 
-La route applique d'abord `validateAchat` pour garantir un payload correct (`userId`, `buildId`/`itemId`, `quantity` en entiers positifs), puis délègue au contrôleur.
+The route first applies `validateAchat` to ensure a correct payload (`userId`, `buildId`/`itemId`, `quantity` in positive integers), then delegates to the controller.
 
-##### 2. Validation du payload (requestValidation.js)
+##### 2. Payload Validation (requestValidation.js)
 
-Le middleware normalise la requête et accepte aussi `itemId` comme alias de `buildId` :
+The middleware normalizes the request and also accepts `itemId` as an alias for `buildId`:
 
 ```javascript
 function validateAchat(req, res, next) {
@@ -328,9 +327,9 @@ function validateAchat(req, res, next) {
 }
 ```
 
-##### 3. Contrôleur Backend2 (marketController.js)
+##### 3. Backend2 Controller (marketController.js)
 
-Le contrôleur reste léger : il transmet les données au service métier avec le header d'autorisation Keycloak.
+The controller remains lightweight: it passes the data to the business service with the Keycloak authorization header.
 
 ```javascript
 async function achat(req, res, next) {
@@ -343,25 +342,25 @@ async function achat(req, res, next) {
 }
 ```
 
-##### 4. Service métier Backend2 (marketService.js)
+##### 4. Backend2 Business Service (marketService.js)
 
-Le service `achat(...)` orchestre toute la logique métier :
+The `achat(...)` service orchestrates all the business logic:
 
-- Démarre une transaction SQL.
-- Vérifie l'existence utilisateur.
-- Vérifie que la session Keycloak correspond bien à l'utilisateur demandé.
-- Vérifie que le compte Minecraft est lié.
-- Vérifie le solde wallet et le prix du build.
-- Débite le wallet via Backend1.
-- Publie un message RabbitMQ pour traitement côté Minecraft.
-- Enregistre le build dans l'inventaire applicatif (`t_inventaire_build`).
-- Commit la transaction.
-- En cas d'erreur après débit, tente une compensation du wallet.
+- Starts a SQL transaction.
+- Verifies user existence.
+- Verifies that the Keycloak session matches the requested user.
+- Verifies that the Minecraft account is linked.
+- Verifies the wallet balance and network build price.
+- Debits the wallet via Backend1.
+- Publishes a RabbitMQ message for processing on the Minecraft side.
+- Registers the build in the application inventory (`t_inventaire_build`).
+- Commits the transaction.
+- In case of error after debit, attempts wallet compensation.
 
-##### 4.1 Verrouillage SQL du wallet (Backend1)
+##### 4.1 SQL Wallet Locking (Backend1)
 
-Le débit réel du portefeuille est fait dans Backend1 (`adjustWalletForUser`).
-La ligne importante est le `FOR UPDATE`, qui verrouille la ligne du portefeuille pendant la transaction pour éviter les incohérences en cas d'achats simultanés.
+The actual debit of the wallet is done in Backend1 (`adjustWalletForUser`).
+The important line is the `FOR UPDATE`, which locks the wallet row during the transaction to avoid inconsistencies in case of simultaneous purchases.
 
 ```sql
 START TRANSACTION;
@@ -373,13 +372,13 @@ WHERE c.pseudo = ?
 LIMIT 1
 FOR UPDATE;
 
--- UPDATE / INSERT du solde
+-- UPDATE / INSERT of balance
 
 COMMIT;
--- ou ROLLBACK en cas d'erreur
+-- or ROLLBACK in case of error
 ```
 
-Extrait clé :
+Key excerpt:
 
 ```javascript
 const adjustedWallet = await adjustBackend1Wallet(user.username, -totalPrice);
@@ -405,9 +404,9 @@ const inventoryId = await buildsRepository.createInventoryBuildEntry(
 );
 ```
 
-##### 5. Publication RabbitMQ (rabbitMqService.js)
+##### 5. RabbitMQ Publishing (rabbitMqService.js)
 
-Backend2 publie l'événement d'achat sur la queue `voxelmarket.build.purchase` (durable + message persistant) :
+Backend2 publishes the purchase event on the `voxelmarket.build.purchase` queue (durable + persistent message):
 
 ```javascript
 await channel.assertQueue(config.buildPurchaseQueue, { durable: true });
@@ -418,17 +417,17 @@ channel.sendToQueue(buildPurchaseQueue, Buffer.from(JSON.stringify(payload)), {
 });
 ```
 
-Cette étape découple la validation/persistance de l'achat du traitement Minecraft, ce qui rend le flux plus robuste.
+This step decouples the validation/persistence of the purchase from the Minecraft processing, making the flow more robust.
 
-##### 6. Consommation Backend3 (buildPurchaseConsumer.js)
+##### 6. Backend3 Consumption (buildPurchaseConsumer.js)
 
-Au démarrage de Backend3, le consumer RabbitMQ est activé :
+Upon Backend3 startup, the RabbitMQ consumer is activated:
 
 ```javascript
 await startBuildPurchaseConsumer();
 ```
 
-Le consumer lit la même queue, traite le message, puis `ack` en cas de succès ou `nack` sans requeue en cas d'échec :
+The consumer reads the same queue, processes the message, then `ack` on success or `nack` without requeueing on failure:
 
 ```javascript
 await channel.consume(config.buildPurchaseQueue, async (message) => {
@@ -441,18 +440,18 @@ await channel.consume(config.buildPurchaseQueue, async (message) => {
     await handleBuildPurchase(payload);
     channel.ack(message);
   } catch (error) {
-    console.error("Echec du traitement RabbitMQ build purchase", error);
+    console.error("Failed RabbitMQ build purchase processing", error);
     channel.nack(message, false, false);
   }
 });
 ```
 
-##### 7. Application en jeu via RCON (Backend3)
+##### 7. In-Game Application via RCON (Backend3)
 
-`handleBuildPurchase(...)` exécute les actions Minecraft via RCON :
+`handleBuildPurchase(...)` executes the Minecraft actions via RCON:
 
-- Don du build si le nom correspond à `houselosakan`.
-- Envoi d'un message de confirmation au joueur.
+- Gives the build if the name corresponds to `houselosakan`.
+- Sends a confirmation message to the player.
 
 ```javascript
 if (buildName.toLowerCase() === "houselosakan") {
@@ -461,11 +460,11 @@ if (buildName.toLowerCase() === "houselosakan") {
 
 await sendMessageToPlayer(
   minecraftUsername,
-  `VoxelMarket: achat confirme pour le build ${buildName || "inconnu"} x${quantity}.`
+  `VoxelMarket: confirmed purchase for the build ${buildName || "unknown"} x${quantity}.`
 );
 ```
 
-**Résumé du flux backend** :
+**Backend flow summary**:
 
 ```
 POST /api/achat
@@ -478,27 +477,27 @@ POST /api/achat
 
 RabbitMQ consumer Backend3
   -> handleBuildPurchase
-  -> commandes RCON
+  -> RCON commands
   -> ACK message
 ```
 
-### Descente de code n°2
+### Code Dive #2
 
-#### Fonctionnalité : Récupération d'inventaire Minecraft
+#### Feature: Minecraft Inventory Retrieval
 
-Cette descente de code illustre le chemin d'une requête pour récupérer l'inventaire d'un joueur Minecraft. L'utilisateur clique sur "Rafraîchir l'inventaire" et obtient la liste de ses items actuels.
+This code dive illustrates the path of a request to retrieve a Minecraft player's inventory. The user clicks on "Refresh inventory" and gets the list of their current items.
 
-##### 1. Initiation Frontend (inventory.html / app.js)
+##### 1. Frontend Initiation (inventory.html / app.js)
 
-L'utilisateur clique sur le bouton "Rafraîchir l'inventaire" :
+The user clicks on the "Refresh inventory" button:
 
 ```html
 <button id="refresh-inv" type="button">
-  <i class="bi bi-arrow-clockwise"></i>Rafraîchir l'inventaire
+  <i class="bi bi-arrow-clockwise"></i>Refresh inventory
 </button>
 ```
 
-Le gestionnaire d'événement appelle `loadWalletAndInventory()` via `app.js` :
+The event handler calls `loadWalletAndInventory()` via `app.js`:
 
 ```javascript
 refreshInventoryButton?.addEventListener("click", async () => {
@@ -509,9 +508,9 @@ refreshInventoryButton?.addEventListener("click", async () => {
 });
 ```
 
-##### 2. Appel API (inventoryService.js)
+##### 2. API Call (inventoryService.js)
 
-Le service frontend construit une requête HTTP pour Backend3 :
+The frontend service builds an HTTP request for Backend3:
 
 ```javascript
 // inventoryService.js
@@ -524,23 +523,23 @@ async function requestInventory(pseudo) {
 }
 ```
 
-**Requête HTTP** :
+**HTTP Request**:
 
 ```
-GET http://backend3:3003/api/inventory/MonPseudoMC
+GET http://backend3:3003/api/inventory/MyMCPseudo
 ```
 
-##### 3. Routage Backend3 (inventoryRoutes.js)
+##### 3. Backend3 Routing (inventoryRoutes.js)
 
-Express route vers le contrôleur :
+Express routes to the controller:
 
 ```javascript
 router.get("/:pseudo", getInventory);
 ```
 
-##### 4. Contrôleur Backend3 (inventoryController.js)
+##### 4. Backend3 Controller (inventoryController.js)
 
-Le contrôleur extrait le pseudo et appelle le service RCON :
+The controller extracts the pseudo and calls the RCON service:
 
 ```javascript
 async function getInventory(req, res, next) {
@@ -554,21 +553,21 @@ async function getInventory(req, res, next) {
 }
 ```
 
-##### 5. Service RCON (rconService.js)
+##### 5. RCON Service (rconService.js)
 
-Le service exécute une commande RCON pour récupérer l'inventaire :
+The service executes an RCON command to retrieve the inventory:
 
 ```javascript
 async function getPlayerInventory(pseudo) {
   const command = `data get entity ${pseudo} Inventory`;
   const response = await executeRconCommand(command);
 
-  // Vérifie si le joueur est en ligne
+  // Checks if the player is online
   if (/No entity was found/i.test(response)) {
-    throw createHttpError("Le joueur est probablement hors ligne.", 404);
+    throw createHttpError("Player is probably offline.", 404);
   }
 
-  // Parse la réponse SNBT et normalise les items
+  // Parses the SNBT response and normalizes the items
   let items = [];
   if (!/No items were found/i.test(response)) {
     items = parseInventoryResponse(response).map(normalizeInventoryItem);
@@ -582,21 +581,21 @@ async function getPlayerInventory(pseudo) {
 }
 ```
 
-**Commande RCON exécutée sur le serveur Minecraft** :
+**RCON Command executed on the Minecraft server**:
 
 ```
-data get entity MonPseudoMC Inventory
+data get entity MyMCPseudo Inventory
 ```
 
-Réponse serveur (format SNBT) :
+Server response (SNBT format):
 
 ```
 [{Slot:0b,id:"minecraft:diamond",count:5b},{Slot:1b,id:"minecraft:emerald",count:3b}]
 ```
 
-##### 6. Normalisation des items
+##### 6. Items Normalization
 
-Chaque item SNBT est transformé en objet JSON :
+Each SNBT item is transformed into a JSON object:
 
 ```javascript
 function normalizeInventoryItem(item) {
@@ -604,17 +603,17 @@ function normalizeInventoryItem(item) {
     slot: item.Slot,
     itemId: item.id, // "minecraft:diamond"
     count: item.count, // 5
-    slotType: mapSlotInfo(slot).type, // "Hotbar" ou "Inventory"
+    slotType: mapSlotInfo(slot).type, // "Hotbar" or "Inventory"
     raw: item,
   };
 }
 ```
 
-**Réponse structurée** :
+**Structured Response**:
 
 ```json
 {
-  "pseudo": "MonPseudoMC",
+  "pseudo": "MyMCPseudo",
   "count": 2,
   "inventory": [
     {
@@ -633,16 +632,16 @@ function normalizeInventoryItem(item) {
 }
 ```
 
-##### 7. Affichage Frontend (inventoryView.js)
+##### 7. Frontend Display (inventoryView.js)
 
-Le frontend reçoit la réponse et l'affiche :
+The frontend receives the response and displays it:
 
 ```javascript
 export function renderInventory(inventory, { sellableItems = [] } = {}) {
   const total = inventory.reduce((sum, entry) => sum + entry.count, 0);
   summaryInventoryCount.textContent = `${total} item(s)`;
 
-  // Crée une ligne pour chaque item
+  // Creates a row for each item
   inventoryList.innerHTML = inventory
     .map((entry) => {
       const displayName = entry.itemId.replace("minecraft:", "");
@@ -655,82 +654,82 @@ export function renderInventory(inventory, { sellableItems = [] } = {}) {
 }
 ```
 
-**Résumé du flux** :
+**Flow summary**:
 
 ```
 [Click] → loadWalletAndInventory()
-  → fetchInventoryByPseudo("MonPseudoMC")
-  → GET /api/inventory/MonPseudoMC (Backend3)
+  → fetchInventoryByPseudo("MyMCPseudo")
+  → GET /api/inventory/MyMCPseudo (Backend3)
   → getPlayerInventory()
-  → executeRconCommand("data get entity MonPseudoMC Inventory")
+  → executeRconCommand("data get entity MyMCPseudo Inventory")
   → Parse & Normalize
   → JSON Response
   → renderInventory()
   → UI Update ✓
 ```
 
-### Problèmes rencontrés
+### Encountered Issues
 
-| Problème | Description                                               | Contexte                                                                                                                                                     | Solution mise en place                                                                                          |
+| Issue | Description                                               | Context                                                                                                                                                     | Implemented Solution                                                                                          |
 | :--------: | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-|    P01     | **Commandes RCON externes non fonctionnelles**            | Les commandes RCON envoyées depuis les services backend vers le serveur Minecraft échouaient systématiquement, rendant impossible l'interaction avec le jeu. | Création d'un Backend3 dédié avec service RCON optimisé et gestion des erreurs améliorée.                       |
-|    P02     | **Architecture microservices trop complexe initialement** | Tentative d'intégration directe des commandes Minecraft dans Backend2, créant un couplage fort et des problèmes de maintenance.                              | Refactorisation en architecture claire : Backend1 (Auth), Backend2 (Market), Backend3 (Minecraft/RCON).         |
-|    P03     | **Gestion des états asynchrones RabbitMQ**                | Difficultés à garantir la persistance des messages lors d'indisponibilités temporaires du service Minecraft.                                                 | Implémentation de queues durables avec `persistent: true` et gestion des ACK/NACK pour la fiabilité.            |
-|    P04     | **Parsing des réponses SNBT de Minecraft**                | Les réponses RCON au format SNBT (Serialized NBT) variaient selon les versions et causaient des erreurs de parsing.                                          | Développement d'un parser robuste avec fallback vers interrogation slot par slot si parsing global échoue.      |
-|    P05     | **Synchronisation des wallets multi-bases**               | Les transactions impliquant DB_COMPTES et DB_MINECRAFT créaient des risques d'incohérence.                                                                   | Utilisation de transactions SQL avec verrouillage `FOR UPDATE` et validation des soldes avant chaque opération. |
-|    P06     | **Authentification Keycloak cross-origin**                | Problèmes CORS lors de l'authentification depuis le frontend vers Keycloak via les backends.                                                                 | Configuration complète des headers CORS et adaptation des URLs Keycloak pour l'environnement Docker.            |
+|    P01     | **External RCON commands not working**                    | RCON commands sent from frontend/backend services to the Minecraft server consistently failed, making game interaction impossible.                           | Creation of a dedicated Backend3 with an optimized RCON service and improved error handling.                    |
+|    P02     | **Microservices architecture initially too complex**      | Attempt to directly integrate Minecraft commands into Backend2, creating tight coupling and maintenance issues.                                              | Refactoring to a clear architecture: Backend1 (Auth), Backend2 (Market), Backend3 (Minecraft/RCON).             |
+|    P03     | **RabbitMQ asynchronous state management**                | Difficulties ensuring message persistence during temporary unavailability of the Minecraft service.                                                            | Implementation of durable queues with `persistent: true` and ACK/NACK management for reliability.               |
+|    P04     | **Parsing Minecraft SNBT responses**                      | RCON responses in SNBT (Serialized NBT) format varied according to versions and caused parsing errors.                                                       | Development of a robust parser with fallback to slot-by-slot querying if global parsing fails.                |
+|    P05     | **Multi-database wallets synchronization**                | Transactions involving DB_COMPTES and DB_MINECRAFT created risks of inconsistency.                                                                           | Use of SQL transactions with `FOR UPDATE` locking and balance validation before each operation.                 |
+|    P06     | **Cross-origin Keycloak Authentication**                  | CORS issues during authentication from the frontend to Keycloak via the backends.                                                                            | Complete configuration of CORS headers and Keycloak URLs adaptation for the Docker environment.                 |
 
-### Améliorations
+### Improvements
 
-| Amélioration | Description | Pertinence | Apport |
+| Improvement | Description | Relevance | Benefit |
 | :------------: | ----------- | ---------- | ------ |
-| A01 | **Interface d'administration des builds** | Créer une interface web pour gérer les builds (ajout, modification, suppression) sans manipuler directement la base de données. | Simplifie la gestion des contenus par les administrateurs. | Gain de temps et réduction des erreurs humaines. |
-| A02 | **Système de notifications en temps réel** | Implémenter WebSocket pour notifier les joueurs des achats, ventes et placements de builds en direct. | Améliore l'expérience utilisateur et la réactivité du système. | Meilleure engagement et transparence des transactions. |
-| A03 | **Historique détaillé des transactions** | Ajouter des filtres et exports CSV/JSON pour l'historique des transactions wallet. | Permet aux utilisateurs de suivre leurs activités économiques. | Transparence accrue et meilleure gestion financière. |
-| A04 | **Monitoring avancé avec Grafana** | Dashboard de monitoring des transactions, performances RabbitMQ et états des services. | Permet une supervision proactive de l'architecture distribuée. | Détection rapide des anomalies et optimisation des performances. |
+| A01 | **Builds administration interface** | Create a web interface to manage builds (add, edit, delete) without directly manipulating the database. | Simplifies content management by administrators. | Time saving and reduction of human errors. |
+| A02 | **Real-time notifications system** | Implement WebSocket to notify players of purchases, sales, and build placements live. | Improves user experience and system responsiveness. | Better engagement and transaction transparency. |
+| A03 | **Detailed transaction history** | Add filters and CSV/JSON exports for wallet transaction history. | Allows users to track their economic activities. | Increased transparency and better financial management. |
+| A04 | **Advanced monitoring with Grafana** | Monitoring dashboard for transactions, RabbitMQ performance, and service states. | Allows proactive supervision of the distributed architecture. | Quick detection of anomalies and performance optimization. |
 
-### Limitations et manquement cause de temps
+### Limitations and Shortcomings Due to Time Constraints
 
-| # Limitation | Implémentation actuelle | Amélioration recommandée | Impact |
+| # Limitation | Current Implementation | Recommended Improvement | Impact |
 | :----------: | ---------------------- | ---------------------- | ------ |
-| L01 | **Verrous transactionnels partiels** | `FOR UPDATE` uniquement sur les tables wallet, pas sur les transactions multi-bases complètes. | Implémenter des transactions distribuées ou utiliser des points de sauvegarde. | Cohérence absolue des données multi-bases. |
-| L02 | **Gestion des erreurs RCON basique** | Retry simple sans backoff exponentiel ni circuit breaker. | Implémenter une stratégie de retry avancée avec monitoring. | Résilience accrue face aux pannes Minecraft. |
-| L03 | **Validation des items en vente statique** | Liste hardcodée dans `initDb_mc.sql` sans mise à jour dynamique. | Créer une interface admin pour gérer les items et prix en temps réel. | Flexibilité et adaptation au meta-jeu. |
-| L04 | **Logging structuré incomplet** | Logs console basiques sans formatage structuré ni agrégation. | Implémenter Winston/ELK pour logs centralisés et analysables. | Debugging facilité et monitoring proactif. |
-| L05 | **Tests unitaires absents** | Tests uniquement manuels via Postman, pas de suite de tests automatisée. | Ajouter Jest/Supertest pour couvrir les cas critiques. | Régression détectée automatiquement. |
-| L06 | **Configuration environnement rigide** | Variables d'environnement sans validation ni fallbacks robustes. | Implémenter Joi pour validation config et environment staging. | Déploiement plus sûr et flexible. |
-| L07 | **Cache Redis non implémenté** | Chaque requête inventaire = appel RCON systématique. | Mettre en cache Redis avec TTL court et invalidation intelligente. | Performance x10 et charge serveur réduite. |
-| L08 | **Documentation API absente** | Pas de documentation interactive des endpoints REST. | Implémenter Swagger/OpenAPI avec swagger-ui-express. | Découverte et test automatique des API. |
+| L01 | **Partial transactional locks** | `FOR UPDATE` only on wallet tables, not on complete multi-db transactions. | Implement distributed transactions or use savepoints. | Absolute multi-db data consistency. |
+| L02 | **Basic RCON error handling** | Simple retry without exponential backoff or circuit breaker. | Implement an advanced retry strategy with monitoring. | Increased resilience to Minecraft outages. |
+| L03 | **Static sale items validation** | Hardcoded list in `initDb_mc.sql` without dynamic update. | Create an admin interface to manage items and prices in real-time. | Flexibility and adaptation to the meta-game. |
+| L04 | **Incomplete structured logging** | Basic console logs without structured formatting or aggregation. | Implement Winston/ELK for centralized and analyzable logs. | Easier debugging and proactive monitoring. |
+| L05 | **Missing unit tests** | Manual tests only via Postman, no automated test suite. | Add Jest/Supertest to cover critical cases. | Automatically detected regressions. |
+| L06 | **Rigid environment configuration** | Environment variables without validation or robust fallbacks. | Implement Joi for config validation and staging environments. | Safer and more flexible deployments. |
+| L07 | **Redis Cache not implemented** | Every inventory request = systematic RCON call. | Use Redis cache with short TTL and smart invalidation. | 10x performance and reduced server load. |
+| L08 | **API documentation missing** | No interactive documentation of REST endpoints. | Implement Swagger/OpenAPI with swagger-ui-express. | Automatic API discovery and testing. |
 
 
 ## Tests
 
-### Résultats des tests
+### Test Results
 
-| Test | Description                                                                                                    | Résultat attendu                                                                                             | Résultat obtenu                                                                                 |
+| Test   | Description                                                                                                    | Expected Result                                                                                             | Obtained Result                                                                                 |
 | :----: | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-|  T01   | Authentifier un utilisateur via Keycloak avec des identifiants valides.                                        | L'utilisateur est authentifié, un token valide est retourné et les routes protégées sont accessibles.        | ✅ **SUCCÈS** - Token JWT retourné avec `access_token`, `refresh_token`, `expires_in: 300`      |
-|  T02   | Tenter une authentification avec des identifiants invalides.                                                   | L'accès est refusé, aucun token valide n'est délivré.                                                        | ✅ **SUCCÈS** - Erreur 401 avec "Invalid credentials"                                           |
-|  T03   | Générer un code de liaison Minecraft depuis le plugin en jeu.                                                  | Un code unique est créé avec une date d'expiration et stocké en base.                                        | ✅ **SUCCÈS** - Code 6 chiffres généré, TTL 5min, stocké dans `t_code_liaison`                  |
-|  T04   | Confirmer la liaison Minecraft avec un code valide côté Web.                                                   | Le compte VoxelMarket est lié au compte Minecraft correspondant et l'état est persisté en base.              | ✅ **SUCCÈS** - Liaison créée dans `t_compte_minecraft`, statut 'UTILISE'                       |
-|  T05   | Confirmer la liaison avec un code expiré ou invalide.                                                          | La liaison est refusée avec un message d'erreur explicite, sans modification en base.                        | ✅ **SUCCÈS** - Erreur 400 "Code invalide ou expiré"                                            |
-|  T06   | Consulter le solde wallet d'un utilisateur authentifié.                                                        | Le solde retourné correspond à la valeur stockée dans la base de données.                                    | ✅ **SUCCÈS** - Solde depuis `t_portefeuille`, initial 0.00                                     |
-|  T07   | Vendre des items au système avec une quantité valide dans l'inventaire.                                        | Les items sont retirés de l'inventaire, le wallet est crédité, et la transaction de vente est enregistrée.   | ✅ **SUCCÈS** - Items vérifiés dans `t_item_en_vente`, wallet crédité, transaction enregistrée  |
-|  T08   | Acheter un build avec solde suffisant.                                                                         | Le montant est réservé/débité selon le flux, l'achat est enregistré et une demande de placement est publiée. | ✅ **SUCCÈS** - Solde vérifié, débité, message publié sur RabbitMQ `voxelmarket.build.purchase` |
-|  T09   | Acheter un build avec solde insuffisant.                                                                       | L'achat est refusé, aucun débit n'est effectué et aucun événement de placement n'est publié.                 | ✅ **SUCCÈS** - Erreur 400 "Solde insuffisant pour cet achat"                                   |
-|  T10   | Déclencher un placement de build depuis le client (commande en jeu).                                           | La demande est acceptée, l'événement est publié, puis traité par le plugin de placement.                     | ✅ **SUCCÈS** - Message RabbitMQ consommé, commande RCON `giveplacehouselosakan` exécutée       |
-|  T11   | Placement réussi côté serveur Minecraft.                                                                       | Le statut passe à réussi, la transaction est finalisée et le client reçoit une confirmation.                 | ✅ **SUCCÈS** - Build donné via RCON, message ACK envoyé à RabbitMQ                             |
-|  T12   | Vérifier la persistance des messages RabbitMQ lors d'une indisponibilité temporaire d'un service consommateur. | Le message reste en file et est traité dès le retour du service, sans perte de transaction.                  | ✅ **SUCCÈS** - Queue `durable: true`, messages persistants, reconnexion automatique            |
-|  T13   | Tester l'accès à une route protégée API sans token.                                                            | L'API répond avec un refus d'accès (401/403) et aucune action métier n'est exécutée.                         | ✅ **SUCCÈS** - Middleware CORS présent, routes protégées par Keycloak                          |
-|  T14   | Vérifier l'intégrité des données après un cycle complet liaison + vente d'items + achat + placement.           | Les tables concernées sont cohérentes (liaison, vente, achat, wallet, statut de placement).                  | ✅ **SUCCÈS** - Transactions cohérentes, wallet correctement mis à jour                         |
-|  T15   | Tester la charge légère (ventes d'items et achats de builds simultanés pour un même utilisateur).              | Le système répond sans incohérence de solde, d'inventaire ni doublon de traitement critique.                 | ✅ **SUCCÈS** - Transactions SQL avec `FOR UPDATE` évitent les incohérences                     |
+|  T01   | Authenticate a user via Keycloak with valid credentials.                                                       | User is authenticated, a valid token is returned, and protected routes are accessible.                       | ✅ **SUCCESS** - JWT token returned with `access_token`, `refresh_token`, `expires_in: 300`      |
+|  T02   | Attempt authentication with invalid credentials.                                                               | Access is denied, no valid token is issued.                                                                  | ✅ **SUCCESS** - 401 Error with "Invalid credentials"                                           |
+|  T03   | Generate a Minecraft linking code from the in-game plugin.                                                     | A unique code is created with an expiration date and stored in the database.                                 | ✅ **SUCCESS** - 6-digit code generated, 5min TTL, stored in `t_code_liaison`                  |
+|  T04   | Confirm Minecraft linking with a valid code on the Web side.                                                   | The VoxelMarket account is linked to the corresponding Minecraft account and the state is persisted in the database. | ✅ **SUCCESS** - Link created in `t_compte_minecraft`, status 'USED'                       |
+|  T05   | Confirm linking with an expired or invalid code.                                                               | Linking is denied with an explicit error message, without database modification.                             | ✅ **SUCCESS** - 400 Error "Invalid or expired code"                                            |
+|  T06   | Check the wallet balance of an authenticated user.                                                             | The returned balance matches the value stored in the database.                                               | ✅ **SUCCESS** - Balance from `t_portefeuille`, initial 0.00                                     |
+|  T07   | Sell items to the system with a valid quantity in the inventory.                                               | Items are removed from the inventory, the wallet is credited, and the sale transaction is recorded.          | ✅ **SUCCESS** - Items checked in `t_item_en_vente`, wallet credited, transaction recorded  |
+|  T08   | Buy a build with sufficient balance.                                                                           | The amount is reserved/debited according to the flow, purchase is recorded, and a placement request is published. | ✅ **SUCCESS** - Balance checked, debited, message published on RabbitMQ `voxelmarket.build.purchase` |
+|  T09   | Buy a build with insufficient balance.                                                                         | Purchase is denied, no debit is made, and no placement event is published.                                   | ✅ **SUCCESS** - 400 Error "Insufficient balance for this purchase"                                   |
+|  T10   | Trigger a build placement from the client (in-game command).                                                   | The request is accepted, the event is published, then processed by the placement plugin.                     | ✅ **SUCCESS** - RabbitMQ message consumed, `giveplacehouselosakan` RCON command executed       |
+|  T11   | Successful placement on the Minecraft server side.                                                             | The status changes to successful, the transaction is finalized, and the client receives a confirmation.      | ✅ **SUCCESS** - Build given via RCON, ACK message sent to RabbitMQ                             |
+|  T12   | Verify RabbitMQ message persistence during a temporary unavailability of a consumer service.                   | The message remains in the queue and is processed as soon as the service returns, without transaction loss.  | ✅ **SUCCESS** - `durable: true` queue, persistent messages, automatic reconnection            |
+|  T13   | Test access to an API protected route without a token.                                                         | The API responds with an access denial (401/403) and no business action is executed.                         | ✅ **SUCCESS** - CORS Middleware present, routes protected by Keycloak                          |
+|  T14   | Verify data integrity after a complete cycle linking + item sale + purchase + placement.                   | The concerned tables are consistent (linking, sale, purchase, wallet, placement status).                     | ✅ **SUCCESS** - Consistent transactions, wallet correctly updated                         |
+|  T15   | Test light load (simultaneous item sales and build purchases for the same user).                               | The system responds without balance inconsistency, inventory inconsistency, or critical processing duplication. | ✅ **SUCCESS** - SQL Transactions with `FOR UPDATE` avoid inconsistencies                     |
 
-### Requêtes POSTMAN
+### POSTMAN Requests
 
 
-#### Endpoints principaux
+#### Main Endpoints
 
-| Service             | Endpoint                               | Méthode |
+| Service             | Endpoint                               | Method |
 | ------------------- | -------------------------------------- | ------- |
 | **Backend1** (3001) | `/api/auth/config`                     | GET     |
 |                     | `/api/auth/register`                   | POST    |
@@ -753,7 +752,7 @@ export function renderInventory(inventory, { sellableItems = [] } = {}) {
 |                     | `/api/inventory/:pseudo`               | GET     |
 |                     | `/api/inventory/:pseudo/items`         | DELETE  |
 
-#### Requêtes avec paramètres
+#### Requests with Parameters
 
 **POST /api/auth/register** (Backend1)
 
@@ -785,7 +784,7 @@ export function renderInventory(inventory, { sellableItems = [] } = {}) {
 
 **GET /api/transactions** (Backend2)
 
-- Params: `?userId=1` ou `?type=achat` ou `?type=vente`
+- Params: `?userId=1` or `?type=achat` or `?type=vente`
 
 **POST /api/messages/send** (Backend3)
 
@@ -801,29 +800,19 @@ export function renderInventory(inventory, { sellableItems = [] } = {}) {
 
 ## Conclusion
 
-### Réalisation des objectifs
+### Objectives Achievement
 
-Le projet VoxelMarket a atteint ses objectifs principaux en livrant une marketplace fonctionnelle pour le serveur Minecraft. L'intégration complète des trois backends (Auth, Market, Minecraft/RCON) permet une gestion fluide des comptes utilisateurs, des transactions  et des interactions en jeu.
+The VoxelMarket project has achieved its primary objectives by delivering a functional marketplace for the Minecraft server. The full integration of the three backends (Auth, Market, Minecraft/RCON) allows for seamless management of user accounts, transactions, and in-game interactions.
 
-### Fonctionnalités livrées
+### Delivered Features
 
-- **Authentification Keycloak** : Sécurisation avec gestion des rôles
-- **Liaison Minecraft** : Système de codes temporaires
-- **Marketplace** : Vente d'items et achat de builds avec gestion wallet
-- **Architecture asynchrone** : RabbitMQ pour la fiabilité des transactions
-- **Interface web** : Expérience utilisateur moderne et responsive
+- **Keycloak Authentication**: Security with role management
+- **Minecraft Linking**: Temporary code system
+- **Marketplace**: Item selling and build purchasing with wallet management
+- **Asynchronous Architecture**: RabbitMQ for transaction reliability
+- **Web Interface**: Modern and responsive user experience
 
-### Compétences techniques développées
+### Developed Technical Skills
 
-Ce projet a permis de maîtriser une architecture microservices complexe avec des technologies variées : Node.js, MySQL, RabbitMQ, Docker, Keycloak et RCON Minecraft. La gestion des transactions distribuées, des APIs REST et de l'intégration continue représente un acquis technique solide.
+This project allowed mastering a complex microservices architecture with various technologies: Node.js, MySQL, RabbitMQ, Docker, Keycloak, and Minecraft RCON. Managing distributed transactions, REST APIs, and continuous integration represents a solid technical achievement.
 
-### Vision globale
-
-VoxelMarket démontre la capacité à créer un système économique complet intégré à un environnement de jeu. L'architecture scalable et les choix techniques permettent d'envisager des évolutions futures significatives tout en maintenant une base technique saine et documentée.
-
-Le résultat final est un produit fonctionnel, professionnel et prêt pour un déploiement en production.
-
-
-
-Bilan Jonas Deillon : 
-Je pense avoir cherché à progresser et à donner mon meilleur afin de mener à bien ce projet, cela a été très instructif surtout au niveau de ma gestion personnelle que ce soit temps ou ambitions, il faut savoir voir plus petit au début quitte à améliorer et à rajouter beaucoup plus que prévu plutôt que ne pas réussir à faire tout ce que l'on s'était fixé. J'ai apprécié faire ce projet et comme d'habitude le fait de pouvoir travailler avec des collègues que l'on peut choisir permet une bonne entente et donc une meilleure collaboration. 
